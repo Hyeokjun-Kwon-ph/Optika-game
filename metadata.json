@@ -1,5 +1,6 @@
 {
   "name": "Optika - Laser Reflection Game",
   "description": "An educational physics game where users arrange mirrors to guide a laser beam to a detector, learning about light reflection.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "prompt": ""
 }

@@ -3,6 +3,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GameCanvas } from './components/GameCanvas';
 import { MirrorPalette } from './components/MirrorPalette';
 import { RefreshButton } from './components/RefreshButton';
+import { MusicToggleButton } from './components/MusicToggleButton'; // Added import
 import type { Point, PlacedMirror, Obstacle, LaserSegment, DetectorType, GameGoal, LaserSource, LineObstacle, RectangleObstacle, CircleObstacle, BoundaryObject } from './types';
 import { 
     GAME_WIDTH, GAME_HEIGHT, MAX_REFLECTIONS, 
@@ -29,6 +30,42 @@ const App: React.FC = () => {
   const [draggingMirrorInfo, setDraggingMirrorInfo] = useState<DraggingMirrorInfo | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+
+  useEffect(() => {
+    if (!audioRef.current) {
+        audioRef.current = new Audio('/assets/background-music.mp3'); 
+        audioRef.current.loop = true;
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
+
+  const toggleMusic = useCallback(() => {
+    if (audioRef.current) {
+      if (isMusicPlaying) { // If currently playing, attempt to pause
+        audioRef.current.pause();
+        setIsMusicPlaying(false); // Update state to reflect paused
+      } else { // If currently paused/stopped, attempt to play
+        audioRef.current.play()
+          .then(() => {
+            setIsMusicPlaying(true); // Update state to reflect playing, only if play() promise resolves
+          })
+          .catch(error => {
+            console.warn("Audio play was prevented. Ensure the file '/assets/background-music.mp3' exists or check browser policies.", error);
+            // Ensure state remains false (or is set to false) if play fails
+            setIsMusicPlaying(false); 
+          });
+      }
+    }
+  }, [isMusicPlaying]);
+
+
   const generateId = useCallback(() => Date.now().toString(36) + Math.random().toString(36).substring(2), []);
 
   const getSVGCoordinates = useCallback((clientX: number, clientY: number): Point | null => {
@@ -48,7 +85,7 @@ const App: React.FC = () => {
     setDraggingMirrorInfo(null);
     
     const numPairs = 1 + Math.floor(Math.random() * MAX_LASER_DETECTOR_PAIRS);
-    const tempNewGoals: Omit<GameGoal, 'laserPath' | 'isHit'>[] = []; // Goals before initial path calculation
+    const tempNewGoals: Omit<GameGoal, 'laserPath' | 'isHit'>[] = []; 
     
     const availableSourceEdges: ('left' | 'top' | 'bottom')[] = ['left', 'top', 'bottom'];
     const availableDetectorEdges: ('right' | 'top' | 'bottom')[] = ['right', 'top', 'bottom'];
@@ -189,7 +226,6 @@ const App: React.FC = () => {
     }
     setObstacles(newObstaclesList);
 
-    // Calculate initial paths for the new goals (with no mirrors)
     const allDetectorsForNewGoals = tempNewGoals.map(g => g.detector);
     const finalNewGoals = tempNewGoals.map(tempGoal => {
         const pathSegments: LaserSegment[] = [];
@@ -248,7 +284,6 @@ const App: React.FC = () => {
   }, [levelSeed, resetLevel]); 
 
 
-  // This useEffect now primarily updates paths based on mirror changes or other dynamic interactions.
   useEffect(() => {
     if (gameGoals.length === 0) {
       if(overallSuccess) setOverallSuccess(false);
@@ -447,7 +482,10 @@ const App: React.FC = () => {
           >
             Optika
           </h1>
-          <RefreshButton onRefresh={() => setLevelSeed(s => s + 1)} />
+          <div className="flex items-center space-x-2">
+            <MusicToggleButton onToggle={toggleMusic} isPlaying={isMusicPlaying} />
+            <RefreshButton onRefresh={() => setLevelSeed(s => s + 1)} />
+          </div>
         </header>
         <div className="flex flex-1 overflow-hidden">
           <main className="flex-1 p-4 overflow-auto flex justify-center items-center">
