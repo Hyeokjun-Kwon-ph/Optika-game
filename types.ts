@@ -3,7 +3,7 @@ export interface Point {
   y: number;
 }
 
-export type MirrorType = 'default' | 'long' | 'angled';
+export type MirrorType = 'default' | 'beam-splitter' | 'diffraction-grating';
 
 export interface PaletteMirrorTemplate {
   id: string;
@@ -83,12 +83,10 @@ export interface LaserSource {
   initialDirection: Point;
 }
 
-export interface GameGoal {
+export interface TrackedLaserSource {
   id: string;
   source: LaserSource;
-  detector: DetectorType;
   laserPath: LaserSegment[];
-  isHit: boolean;
 }
 
 export interface BoundingBox {

@@ -6,7 +6,23 @@ export const GAME_HEIGHT = 600;
 export const PALETTE_WIDTH = 200;
 
 export const LASER_COLOR = "red";
-export const MIRROR_COLOR = "rgb(51 65 85)"; // slate-700
+
+// Standard Mirror
+export const MIRROR_COLOR = "rgb(51 65 85)"; // slate-700 (Front reflective surface)
+export const MIRROR_BACKING_COLOR = "rgb(30 41 59)"; // slate-800 (Backing of the mirror)
+export const MIRROR_EDGE_HIGHLIGHT_COLOR = "rgb(100 116 139)"; // slate-500 (Subtle edge)
+
+// Beam Splitter
+export const BEAM_SPLITTER_COLOR = "rgb(0 191 255)"; // Deep Sky Blue
+export const BEAM_SPLITTER_FILL_OPACITY = 0.4;
+export const BEAM_SPLITTER_EDGE_COLOR = "rgb(0 150 200)"; // Darker blue for edge
+
+// Diffraction Grating
+export const DIFFRACTION_GRATING_COLOR = "rgb(153 50 204)"; // Dark Orchid
+export const DIFFRACTION_GRATING_FILL_OPACITY = 0.5;
+export const DIFFRACTION_GRATING_EDGE_COLOR = "rgb(120 40 160)"; // Darker purple for edge
+export const DIFFRACTION_GRATING_LINE_COLOR = "rgba(255, 255, 255, 0.6)"; // Light lines on grating
+
 export const MIRROR_HANDLE_COLOR = "rgb(203 213 225)"; // slate-300
 
 export const FRAME_COLOR = "rgb(0 0 0)"; // black
@@ -33,9 +49,10 @@ export const OBSTACLE_RECT_FILL_COLOR = "rgb(100 116 139 / 0.8)"; // slate-500 w
 export const OBSTACLE_CIRCLE_FILL_COLOR = "rgb(100 116 139 / 0.8)"; // slate-500 with opacity
 
 
-export const MAX_REFLECTIONS = 15;
+export const MAX_REFLECTIONS = 10; // Max interactions for any single path branch
 export const MAX_PLACED_MIRRORS = 5;
-export const MAX_LASER_DETECTOR_PAIRS = 3;
+export const MAX_DETECTECTORS = 5; 
+export const MAX_LASER_SOURCES = 3;
 
 export const DETECTOR_WIDTH = 30;
 export const DETECTOR_HEIGHT = 30;
@@ -44,8 +61,12 @@ export const DETECTOR_ARROW_LENGTH = 12; // Length of the arrow shaft + arrowhea
 export const DETECTOR_ARROWHEAD_SIZE = 6; // Width and height of the arrowhead triangle base
 export const DETECTOR_ACCEPTANCE_ANGLE_DEGREES = 10;
 
-// SOURCE_INITIAL_DIRECTION is now dynamic, set in App.tsx based on edge placement.
-// export const SOURCE_INITIAL_DIRECTION: Point = { x: 1, y: 0 }; 
+// Constant for diffraction grating physics (lambda / d)
+// A value of 0.35 means that for normal incidence (theta_i = 0),
+// the first order (m=1) diffracts at asin(-0.35) approx -20.48 degrees.
+// and (m=-1) diffracts at asin(0.35) approx 20.48 degrees.
+export const GRATING_K_CONSTANT = 0.35;
+
 
 export const OBSTACLE_COLLISION_BUFFER = 15; // Pixels of space between bounding boxes of obstacles/sources/detectors
 export const GAME_BOUNDARY_PADDING = 10; // Min distance from game edge for any part of an obstacle/source/detector
@@ -70,6 +91,6 @@ export const INITIAL_OBSTACLES_EXAMPLE: Obstacle[] = [
 
 export const INITIAL_PALETTE_MIRRORS: PaletteMirrorTemplate[] = [
   { id: 'pm1', type: 'default', defaultLength: 80, defaultAngle: 0, description: 'Standard Mirror (80px)' },
-  { id: 'pm2', type: 'long', defaultLength: 120, defaultAngle: 45, description: 'Long Angled Mirror (120px)' },
-  { id: 'pm3', type: 'angled', defaultLength: 60, defaultAngle: -45, description: 'Short Angled Mirror (60px)' },
+  { id: 'pm-bs', type: 'beam-splitter', defaultLength: 80, defaultAngle: 45, description: 'Beam Splitter (80px)' },
+  { id: 'pm-dg', type: 'diffraction-grating', defaultLength: 80, defaultAngle: 0, description: 'Diffraction Grating (80px)' },
 ];
